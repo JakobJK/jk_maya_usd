@@ -6,7 +6,7 @@ from maya.api import OpenMaya as om
 class Xform(PrimBase):
     def export_node(self, stage, dag_node, target):
         # TODO: The fact maya groups has pivot points, and xforms don't will be fun.
-        # We should still adhere to the common practice of zero out transformations. :)
+        # We should still adhere to the common practice of zero out transformations. 
         xform = UsdGeom.Xform.Define(stage, target)
         prim = xform.GetPrim() 
         return prim
