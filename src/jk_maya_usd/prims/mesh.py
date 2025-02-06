@@ -6,7 +6,7 @@ from maya.api import OpenMaya as om
 class Mesh(PrimBase):
     def export_node(self, stage, dag_node, target):
         mesh = UsdGeom.Mesh.Define(stage, target)
-        prim = mesh.GetPrim()  # Extract Usd.Prim for returning
+        prim = mesh.GetPrim()  
 
         selection_list = om.MSelectionList()
         selection_list.add(dag_node)

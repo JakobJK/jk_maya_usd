@@ -7,6 +7,8 @@ from pxr import Usd, UsdGeom
 from jk_maya_usd.constants import DEFAULT_CAMERAS, DESTINATION
 from jk_maya_usd.prims import prim_classes
 
+from jk_maya_usd.maya_utilities import get_scene_scale, get_up_axis
+
 def get_node_type(node):
     if cmds.nodeType(node) == 'transform':
         children = cmds.listRelatives(node, children=True, shapes=True, fullPath=True)
@@ -22,13 +24,23 @@ class CustomUSDExporter():
         if node_type in prim_classes:
             cls = prim_classes[node_type]() 
             prim = cls.export_node(self.stage, dag_node, target)
-            
             print(f"Prim created: {prim.GetName()}")
             
+            
+    def _create_stage(self, destination):
+        self.stage = Usd.Stage.CreateNew(destination)
+        
+        up_axis = get_up_axis()
+        meters_per_unit = get_scene_scale()
+        
+        up_axis_token = UsdGeom.Tokens.y if up_axis == 'Y' else UsdGeom.Tokens.z
+        
+        UsdGeom.SetStageUpAxis(self.stage, up_axis_token)
+        UsdGeom.SetStageMetersPerUnit(self.stage, meters_per_unit) 
+            
     def export(self, top_dag_node: str = ""):
-        
-        self.stage = Usd.Stage.CreateNew(DESTINATION) # TODO: Should come dynamically from somewhere
-        
+        self._create_stage(DESTINATION)
+                
         if top_dag_node:
             dag_nodes = [node for node in cmds.listRelatives(top_dag_node,children=True, type="transform", fullPath=True)]
         else:            
@@ -47,10 +59,7 @@ class CustomUSDExporter():
             target = f"{parent}/{short_name}"
             self.process(node, node_type, target)
             if node_type == 'transform':
-                for child in cmds.listRelatives(node, children=True, fullPath=True):
-                    dfs.append((child, target))
+                if children := cmds.listRelatives(node, children=True, fullPath=True):
+                    for child in children:
+                        dfs.append((child, target))
         self.stage.GetRootLayer().Save()
-
-class CustomUSDImporter():
-    def __init__(self, file: str):
-        self.file = file
