@@ -1,6 +1,6 @@
 from jk_maya_usd.prims.primbase import PrimBase
 
-from pxr import Usd, UsdGeom, Vt, Sdf
+from pxr import UsdGeom, Vt, Sdf
 from maya.api import OpenMaya as om
 
 class Mesh(PrimBase):
