@@ -4,7 +4,3 @@
     upAxis = "Y"
 )
 
-def Xform "pCone1"
-{
-}
-

@@ -1,16 +1,18 @@
 from pxr import Usd
 
+report = {
+    "prims_only_in_generated": [],
+    "prims_only_in_target": [],
+    "type_mismatches": {},
+    "attribute_differences": {}
+}
+
+
 def compare_usd_stages(generated_stage_path: str, target_stage_path: str) -> dict:
     """Compares two USD stages from file paths and returns a detailed diff report."""
     
     generated_stage = Usd.Stage.Open(generated_stage_path)
     target_stage = Usd.Stage.Open(target_stage_path)
-
-    report = {
-        "prims_only_in_generated": [],
-        "prims_only_in_target": [],
-        "attribute_differences": {}
-    }
 
     generated_prims = {prim.GetPath(): prim for prim in generated_stage.Traverse()}
     target_prims = {prim.GetPath(): prim for prim in target_stage.Traverse()}
@@ -26,6 +28,12 @@ def compare_usd_stages(generated_stage_path: str, target_stage_path: str) -> dic
     for path in common_prims:
         gen_prim = generated_prims[path]
         tgt_prim = target_prims[path]
+
+        gen_type = gen_prim.GetTypeName()
+        tgt_type = tgt_prim.GetTypeName()
+
+        if gen_type != tgt_type:
+            report["type_mismatches"][str(path)] = {"generated_type": gen_type, "target_type": tgt_type}
 
         gen_attrs = {attr.GetName(): attr.Get() for attr in gen_prim.GetAttributes()}
         tgt_attrs = {attr.GetName(): attr.Get() for attr in tgt_prim.GetAttributes()}
