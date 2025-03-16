@@ -2,12 +2,11 @@
 
 (
     defaultPrim = "Asset"
+    subLayers = [
+        @MDL.usda@,
+        @UV.usda@
+    ]
 )
-
-sublayers = [
-    @MDL.usda@,
-    @UV.usda@
-]
 
 def Xform "Asset" {
     # This is the root of your asset

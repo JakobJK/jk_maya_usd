@@ -1,7 +1,6 @@
 ''' Custom USD Workflow '''
 
 from maya import cmds
-
 from pxr import Usd, UsdGeom
 
 from jk_maya_usd.constants import DEFAULT_CAMERAS, DESTINATION
