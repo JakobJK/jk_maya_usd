@@ -24,7 +24,7 @@ class CustomUSDExporter():
         if node_type in prim_classes:
             cls = prim_classes[node_type]() 
             prim = cls.export_node(self.stage, dag_node, target)
-            print(f"Prim created: {prim.GetName()}")
+            print(f"Prim({prim.GetTypeName()}) created: {prim.GetName()}")
             
             
     def _create_stage(self, destination):
