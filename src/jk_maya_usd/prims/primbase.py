@@ -1,20 +1,30 @@
 from abc import ABC, abstractmethod
 
+
 class PrimBase(ABC):
+    def __init__(self):
+        self.prim = None
+
+    def export_node(self, stage: str, dag_node: str, target: str):
+        prim = self._export_impl(stage, dag_node, target)
+        self._attach_attributes_to_usd_nodes(stage, dag_node, target)
+        return prim
+
     @abstractmethod
-    def export_node(self, stage: str, dag_node:str, target: str):
-        """This will export a node from Maya to the USD stage.
-
-        Args:
-            stage (_type_): The current stage we are exporting to.
-            dag_node (_type_): The full path of the dag_node from Maya.
-            target (_type_): The full path in the usd stage where the prim will be created.
-
-        Returns:
-            prim: The newly added prim.
-        """
+    def _export_impl(self, stage: str, dag_node: str, target: str):
         pass
 
+    def import_prim(self, stage: str, dag_node: str, target: str):
+        prim = self._import_impl(stage, dag_node, target)
+        self._attach_attributes_to_maya_nodes(stage, dag_node, target)
+        return prim
+        
     @abstractmethod
-    def import_prim(self, stage, usd_prim):
+    def _import_impl(self, stage: str, dag_node: str, target: str):
+        pass
+
+    def _attach_attributes_to_usd_nodes(self, stage, dag_node, target):
+        pass
+
+    def _attach_attributes_to_maya_nodes(self, stage, dag_node, target):
         pass

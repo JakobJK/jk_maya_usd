@@ -1,25 +1,17 @@
-''' Custom USD Workflow '''
-
 from maya import cmds
 from pxr import Usd, UsdGeom
 
 from jk_maya_usd.constants import DEFAULT_CAMERAS, DESTINATION
 from jk_maya_usd.prims import prim_classes
 
-from jk_maya_usd.maya_utilities import get_scene_scale, get_up_axis
-
-def get_node_type(node):
-    if cmds.nodeType(node) == 'transform':
-        children = cmds.listRelatives(node, children=True, shapes=True, fullPath=True)
-        if children:
-            return cmds.nodeType(children[0])
-    return cmds.nodeType(node)
+from jk_maya_usd.maya_utilities import get_scene_scale, get_up_axis, get_node_type
 
 class CustomUSDExporter():
+    """ Export Scene from Maya to USD """
     def __init__(self):
         self.stage = ""
     
-    def process(self, dag_node, node_type, target):
+    def process_node(self, dag_node, node_type, target):
         if node_type in prim_classes:
             cls = prim_classes[node_type]() 
             prim = cls.export_node(self.stage, dag_node, target)
@@ -56,7 +48,7 @@ class CustomUSDExporter():
             node_type = get_node_type(node)
             short_name = node.split('|')[-1]
             target = f"{parent}/{short_name}"
-            self.process(node, node_type, target)
+            self.process_node(node, node_type, target)
             if node_type == 'transform':
                 if children := cmds.listRelatives(node, children=True, fullPath=True):
                     for child in children:

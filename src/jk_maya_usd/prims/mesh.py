@@ -4,7 +4,7 @@ from pxr import UsdGeom, Vt, Sdf
 from maya.api import OpenMaya as om
 
 class Mesh(PrimBase):
-    def export_node(self, stage, dag_node, target):
+    def _export_impl(self, stage, dag_node, target):
         mesh = UsdGeom.Mesh.Define(stage, target)
         prim = mesh.GetPrim()  
 
@@ -45,5 +45,5 @@ class Mesh(PrimBase):
 
         return prim
 
-    def import_prim(self, stage, usd_prim):
+    def _import_impl(self, stage, usd_prim):
         pass

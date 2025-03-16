@@ -16,3 +16,9 @@ def get_scene_scale():
 def get_up_axis():
     return cmds.upAxis(query=True, axis=True).upper()
     
+def get_node_type(node):
+    if cmds.nodeType(node) == 'transform':
+        children = cmds.listRelatives(node, children=True, shapes=True, fullPath=True)
+        if children:
+            return cmds.nodeType(children[0])
+    return cmds.nodeType(node)
