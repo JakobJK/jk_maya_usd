@@ -14,7 +14,7 @@ class PrimBase(ABC):
     def _export_impl(self, stage: str, dag_node: str, target: str):
         pass
 
-    def import_prim(self, stage: str, dag_node: str, target: str):
+    def import_node(self, stage: str, dag_node: str, target: str):
         prim = self._import_impl(stage, dag_node, target)
         self._attach_attributes_to_maya_nodes(stage, dag_node, target)
         return prim

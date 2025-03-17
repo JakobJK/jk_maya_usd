@@ -1,9 +1,12 @@
 
 from jk_maya_usd.prims.mesh import Mesh
 from jk_maya_usd.prims.xform import Xform
+from jk_maya_usd.prims.variantset import VariantSet
 
 
-prim_classes = {
+usd_prims = {
+    'transform': Xform,
     'xform': Xform,
     'mesh': Mesh,
+    'Mesh': Mesh,
 }

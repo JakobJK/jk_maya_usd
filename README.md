@@ -23,5 +23,5 @@ import jk_maya_usd
 recursive_reload(jk_maya_usd)
 
 d = jk_maya_usd.main.CustomUSDExporter()
-d.export()
+d.export_to_usd()
 ```

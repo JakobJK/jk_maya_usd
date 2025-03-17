@@ -41,9 +41,56 @@ class Mesh(PrimBase):
         )
         st_primvar.Set(st_array)
         st_primvar.SetIndices(Vt.IntArray(uv_indices))
-
-
         return prim
 
-    def _import_impl(self, stage, usd_prim):
-        pass
+    def _import_impl(self, stage, usd_prim, parent):
+        if not usd_prim or not usd_prim.IsValid():
+            return None
+
+        mesh = UsdGeom.Mesh(usd_prim)
+
+        points_attr = mesh.GetPointsAttr()
+        points = points_attr.Get() or []
+
+        # Ensure MFloatPointArray is created correctly
+        mfloat_points = om.MFloatPointArray()
+        for x, y, z in points:
+            mfloat_points.append(om.MFloatPoint(x, y, z))
+
+        face_vertex_indices_attr = mesh.GetFaceVertexIndicesAttr()
+        face_vertex_indices = face_vertex_indices_attr.Get() or []
+        face_vertex_indices = om.MIntArray(face_vertex_indices)
+
+        face_vertex_counts_attr = mesh.GetFaceVertexCountsAttr()
+        face_vertex_counts = face_vertex_counts_attr.Get() or []
+        print(face_vertex_counts)
+        face_vertex_counts = om.MIntArray(face_vertex_counts)
+
+        # Ensure a valid number of points and faces exist
+        if len(mfloat_points) == 0 or len(face_vertex_counts) == 0:
+            return None
+
+        # Create the mesh
+        mesh_fn = om.MFnMesh()
+        mesh_obj = mesh_fn.create(
+            mfloat_points, 
+            face_vertex_counts,  
+            face_vertex_indices  
+        )
+
+        # Convert MObject to MDagPath to get the full path name
+        dag_path = om.MDagPath.getAPathTo(mesh_obj)
+
+        # Rename the transform node (not the shape)
+        transform_fn = om.MFnDagNode(dag_path)
+        transform_fn.setName(usd_prim.GetName())
+
+        # Assign default "lambert1" shader
+        shape_obj = dag_path.node()
+        shading_group = om.MSelectionList().add("initialShadingGroup").getDependNode(0)
+        om.MFnSet(shading_group).addMember(shape_obj)
+
+        return dag_path.fullPathName()
+
+
+

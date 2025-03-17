@@ -2,7 +2,7 @@ from maya import cmds
 from pxr import Usd, UsdGeom
 
 from jk_maya_usd.constants import DEFAULT_CAMERAS, DESTINATION
-from jk_maya_usd.prims import prim_classes
+from jk_maya_usd.prims import usd_prims
 
 from jk_maya_usd.maya_utilities import get_scene_scale, get_up_axis, get_node_type
 
@@ -11,9 +11,9 @@ class CustomUSDExporter():
     def __init__(self):
         self.stage = ""
     
-    def process_node(self, dag_node, node_type, target):
-        if node_type in prim_classes:
-            cls = prim_classes[node_type]() 
+    def _process_node(self, dag_node, node_type, target):
+        if node_type in usd_prims:
+            cls = usd_prims[node_type]() 
             prim = cls.export_node(self.stage, dag_node, target)
             print(f"Prim({prim.GetTypeName()}) created: {prim.GetName()}")
             
@@ -29,7 +29,7 @@ class CustomUSDExporter():
         UsdGeom.SetStageUpAxis(self.stage, up_axis_token)
         UsdGeom.SetStageMetersPerUnit(self.stage, meters_per_unit) 
             
-    def export(self, top_dag_node: str = ""):
+    def export_to_usd(self, top_dag_node: str = ""):
         self._create_stage(DESTINATION)
                 
         if top_dag_node:
@@ -42,13 +42,15 @@ class CustomUSDExporter():
         ROOT = ""
         
         dfs = [(node, ROOT) for node in dag_nodes]
-        
+
         while dfs:
             node, parent = dfs.pop()
             node_type = get_node_type(node)
             short_name = node.split('|')[-1]
             target = f"{parent}/{short_name}"
-            self.process_node(node, node_type, target)
+            self._process_node(node, node_type, target)
+
+
             if node_type == 'transform':
                 if children := cmds.listRelatives(node, children=True, fullPath=True):
                     for child in children:
