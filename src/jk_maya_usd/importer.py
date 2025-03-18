@@ -14,8 +14,8 @@ class CustomUSDImporter():
         if node_type in usd_prims:
             cls = usd_prims[node_type]() 
             maya_node = cls.import_node(self.stage, prim, parent)
-            if parent:
-                cmds.parent(maya_node, parent)
+            # if parent:
+            #     cmds.parent(maya_node, parent)
             return maya_node
 
 

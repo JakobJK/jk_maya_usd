@@ -43,6 +43,20 @@ class Mesh(PrimBase):
         st_primvar.SetIndices(Vt.IntArray(uv_indices))
         return prim
 
+    def get_mobject_from_name(self, name):
+        """Get MObject from a node name."""
+        sel = om.MSelectionList()
+        sel.add(name)
+        return sel.getDependNode(0)
+
+    def create_transform(self, name, parent):
+        """Create a new transform under the given parent."""
+        dag_mod = om.MDagModifier()
+        transform_obj = dag_mod.createNode("transform", parent)
+        dag_mod.renameNode(transform_obj, name)
+        dag_mod.doIt()
+        return transform_obj
+
     def _import_impl(self, stage, usd_prim, parent):
         if not usd_prim or not usd_prim.IsValid():
             return None
@@ -52,44 +66,36 @@ class Mesh(PrimBase):
         points_attr = mesh.GetPointsAttr()
         points = points_attr.Get() or []
 
-        # Ensure MFloatPointArray is created correctly
         mfloat_points = om.MFloatPointArray()
         for x, y, z in points:
             mfloat_points.append(om.MFloatPoint(x, y, z))
 
-        face_vertex_indices_attr = mesh.GetFaceVertexIndicesAttr()
-        face_vertex_indices = face_vertex_indices_attr.Get() or []
+        face_vertex_indices = mesh.GetFaceVertexIndicesAttr().Get() or []
         face_vertex_indices = om.MIntArray(face_vertex_indices)
 
-        face_vertex_counts_attr = mesh.GetFaceVertexCountsAttr()
-        face_vertex_counts = face_vertex_counts_attr.Get() or []
-        print(face_vertex_counts)
+        face_vertex_counts = mesh.GetFaceVertexCountsAttr().Get() or []
         face_vertex_counts = om.MIntArray(face_vertex_counts)
 
-        # Ensure a valid number of points and faces exist
         if len(mfloat_points) == 0 or len(face_vertex_counts) == 0:
             return None
 
-        # Create the mesh
+        parent_obj = self.get_mobject_from_name(parent)
+
+        transform_name = usd_prim.GetName()
+        transform_obj = self.create_transform(transform_name, parent_obj)
+
         mesh_fn = om.MFnMesh()
         mesh_obj = mesh_fn.create(
             mfloat_points, 
-            face_vertex_counts,  
-            face_vertex_indices  
+            face_vertex_counts,
+            face_vertex_indices,
+            parent=transform_obj
         )
 
-        # Convert MObject to MDagPath to get the full path name
         dag_path = om.MDagPath.getAPathTo(mesh_obj)
-
-        # Rename the transform node (not the shape)
         transform_fn = om.MFnDagNode(dag_path)
-        transform_fn.setName(usd_prim.GetName())
-
         shape_obj = dag_path.node()
         shading_group = om.MSelectionList().add("initialShadingGroup").getDependNode(0)
         om.MFnSet(shading_group).addMember(shape_obj)
 
         return dag_path.fullPathName()
-
-
-
