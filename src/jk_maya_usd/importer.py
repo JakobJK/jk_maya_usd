@@ -10,11 +10,12 @@ class CustomUSDImporter():
         self.stage = None
 
     def _process_node(self, prim, parent):
-        # Create dag node from prim.
         node_type = prim.GetTypeName().lower()
         if node_type in usd_prims:
             cls = usd_prims[node_type]() 
             maya_node = cls.import_node(self.stage, prim, parent)
+            if parent:
+                cmds.parent(maya_node, parent)
             return maya_node
 
 
@@ -33,7 +34,6 @@ class CustomUSDImporter():
         variant_sets = prim.GetVariantSets()
         variant_set_names = variant_sets.GetNames()
 
-        # Process each VariantSet recursively
         for variant_set_name in variant_set_names:
             variant_set = variant_sets.GetVariantSet(variant_set_name)
             original_variant = variant_set.GetVariantSelection()
@@ -42,11 +42,7 @@ class CustomUSDImporter():
                 variant_set.SetVariantSelection(variant)
                 print(f"  -> Traversing VariantSet '{variant_set_name}' with Variant '{variant}'")
 
-                # Create new dag node from 
-                # Recursively process children under the active variant
                 new_dag_node = self._add_variant(dag_node, variant_set.GetName(), variant)
-
-
                 for child in prim.GetChildren():
                     self._traverse_prim(child, new_dag_node)
 

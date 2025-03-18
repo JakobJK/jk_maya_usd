@@ -85,7 +85,6 @@ class Mesh(PrimBase):
         transform_fn = om.MFnDagNode(dag_path)
         transform_fn.setName(usd_prim.GetName())
 
-        # Assign default "lambert1" shader
         shape_obj = dag_path.node()
         shading_group = om.MSelectionList().add("initialShadingGroup").getDependNode(0)
         om.MFnSet(shading_group).addMember(shape_obj)
