@@ -1,5 +1,5 @@
 from jk_maya_usd.prims.primbase import PrimBase
-
+from jk_maya_usd.maya_utilities import create_transform
 from pxr import UsdGeom, Vt, Sdf
 from maya.api import OpenMaya as om
 
@@ -49,14 +49,6 @@ class Mesh(PrimBase):
         sel.add(name)
         return sel.getDependNode(0)
 
-    def create_transform(self, name, parent):
-        """Create a new transform under the given parent."""
-        dag_mod = om.MDagModifier()
-        transform_obj = dag_mod.createNode("transform", parent)
-        dag_mod.renameNode(transform_obj, name)
-        dag_mod.doIt()
-        return transform_obj
-
     def _import_impl(self, stage, usd_prim, parent):
         if not usd_prim or not usd_prim.IsValid():
             return None
@@ -82,7 +74,7 @@ class Mesh(PrimBase):
         parent_obj = self.get_mobject_from_name(parent)
 
         transform_name = usd_prim.GetName()
-        transform_obj = self.create_transform(transform_name, parent_obj)
+        transform_obj = create_transform(transform_name, parent_obj)
 
         mesh_fn = om.MFnMesh()
         mesh_obj = mesh_fn.create(

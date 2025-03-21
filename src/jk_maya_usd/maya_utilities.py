@@ -12,6 +12,14 @@ def get_scene_scale():
         "yd": 0.9144,
     }.get(meters_per_unit, 1.0)
     
+
+def create_transform(self, name, parent):
+    """Create a new transform under the given parent. Useful for running into Prims"""
+    dag_mod = om.MDagModifier()
+    transform_obj = dag_mod.createNode("transform", parent)
+    dag_mod.renameNode(transform_obj, name)
+    dag_mod.doIt()
+    return transform_obj
     
 def get_up_axis():
     return cmds.upAxis(query=True, axis=True).upper()
