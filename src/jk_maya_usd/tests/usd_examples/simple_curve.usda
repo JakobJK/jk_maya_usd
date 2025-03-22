@@ -1,0 +1,28 @@
+#usda 1.0
+(
+    defaultPrim = "root"
+    metersPerUnit = 0.01
+    upAxis = "Y"
+)
+
+def Xform "root" (
+    kind = "component"
+)
+{
+    def NurbsCurves "curve1"
+    {
+        int[] curveVertexCounts = [9]
+        float3[] extent = [(-16.845737, -0.5, -3.2878606), (6.527671, 0.5, 13.587949)]
+        double[] knots = [0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6]
+        int[] order = [4]
+        point3f[] points = [(-16.345737, 0, -2.7878606), (-12.421269, 0, 1.316694), (-4.5723305, 0, 9.525804), (1.2002953, 0, 4.0997543), (4.431011, 0, 8.178437), (6.027671, 0, 13.087949), (1.95712, 0, 13.03769), (-0.7813944, 0, 12.223968), (-2.1506517, 0, 11.817105)]
+        double2[] ranges = [(0, 6)]
+        float[] widths = [1] (
+            interpolation = "constant"
+        )
+        double3 xformOp:translate = (5.159033831825548, 0, -5.150044007984045)
+        float3 xformOp:translate:pivot = (-5.159034, 0, 5.150044)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:translate:pivot", "!invert!xformOp:translate:pivot"]
+    }
+}
+

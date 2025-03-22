@@ -1,5 +1,6 @@
-
 from maya import cmds
+from maya.api import OpenMaya as om
+
 
 def get_scene_scale():
     meters_per_unit = cmds.currentUnit(query=True, linear=True)
@@ -13,7 +14,12 @@ def get_scene_scale():
     }.get(meters_per_unit, 1.0)
     
 
-def create_transform(self, name, parent):
+def get_mobject_from_name(name):
+    sel = om.MSelectionList()
+    sel.add(name)
+    return sel.getDependNode(0)
+
+def create_transform(name, parent):
     """Create a new transform under the given parent. Useful for running into Prims"""
     dag_mod = om.MDagModifier()
     transform_obj = dag_mod.createNode("transform", parent)

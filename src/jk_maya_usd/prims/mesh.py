@@ -1,5 +1,5 @@
 from jk_maya_usd.prims.primbase import PrimBase
-from jk_maya_usd.maya_utilities import create_transform
+from jk_maya_usd.maya_utilities import create_transform, get_mobject_from_name
 from pxr import UsdGeom, Vt, Sdf
 from maya.api import OpenMaya as om
 
@@ -43,12 +43,6 @@ class Mesh(PrimBase):
         st_primvar.SetIndices(Vt.IntArray(uv_indices))
         return prim
 
-    def get_mobject_from_name(self, name):
-        """Get MObject from a node name."""
-        sel = om.MSelectionList()
-        sel.add(name)
-        return sel.getDependNode(0)
-
     def _import_impl(self, stage, usd_prim, parent):
         if not usd_prim or not usd_prim.IsValid():
             return None
@@ -71,7 +65,7 @@ class Mesh(PrimBase):
         if len(mfloat_points) == 0 or len(face_vertex_counts) == 0:
             return None
 
-        parent_obj = self.get_mobject_from_name(parent)
+        parent_obj = get_mobject_from_name(parent)
 
         transform_name = usd_prim.GetName()
         transform_obj = create_transform(transform_name, parent_obj)

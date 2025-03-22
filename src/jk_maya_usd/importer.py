@@ -11,6 +11,7 @@ class CustomUSDImporter():
 
     def _process_node(self, prim, parent):
         node_type = prim.GetTypeName().lower()
+        print(node_type)
         if node_type in usd_prims:
             cls = usd_prims[node_type]() 
             maya_node = cls.import_node(self.stage, prim, parent)

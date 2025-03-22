@@ -12,11 +12,13 @@ class CustomUSDExporter():
         self.stage = ""
     
     def _process_node(self, dag_node, node_type, target):
+
         if node_type in usd_prims:
             cls = usd_prims[node_type]() 
             prim = cls.export_node(self.stage, dag_node, target)
             print(f"Prim({prim.GetTypeName()}) created: {prim.GetName()}")
-            
+        else:
+            print(f"{node_type} not processed")
             
     def _create_stage(self, destination):
         self.stage = Usd.Stage.CreateNew(destination)

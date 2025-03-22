@@ -15,6 +15,5 @@ class Xform(PrimBase):
         if parent and cmds.objExists(parent):
             group = cmds.group(empty=True, name=short_name, parent=parent)
         else:
-            group = cmds.group(empty=True, name=short_name)  # Creates at world root
-
+            group = cmds.group(empty=True, name=short_name) # Creates at world root
         return group
