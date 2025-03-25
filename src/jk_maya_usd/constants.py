@@ -5,7 +5,6 @@ DESTINATION = "/Users/jakobkousholt/repos/jk_maya_usd/output.usda"
 
 
 class USD_Type(Enum):
-    CLASS = 'Class'
     XFORM = 'Xform'
     SCOPE = 'Scope'
     VARIANT = 'Variant'
@@ -17,8 +16,12 @@ class USD_Purpose(Enum):
     RENDER = 'render'
     INHERIT = 'inherit'
     DEFAULT = 'default'
+    GUIDE = 'guide'
     NONE = ''
 
 class USD_Kind(Enum):
     ASSEMBLY = 'assembly'
     COMPONENT = 'component'
+
+
+ATTRIBUTE_PREFIX = "usd_"

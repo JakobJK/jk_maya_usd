@@ -1,4 +1,3 @@
-
 from jk_maya_usd.prims.mesh import Mesh
 from jk_maya_usd.prims.xform import Xform
 from jk_maya_usd.prims.nurbs_curve import NurbsCurve

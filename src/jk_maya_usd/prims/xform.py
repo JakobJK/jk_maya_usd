@@ -11,9 +11,8 @@ class Xform(PrimBase):
         
     def _import_impl(self, stage, usd_prim, parent):
         short_name = usd_prim.GetName()
-        
         if parent and cmds.objExists(parent):
             group = cmds.group(empty=True, name=short_name, parent=parent)
         else:
-            group = cmds.group(empty=True, name=short_name) # Creates at world root
+            group = cmds.group(empty=True, name=short_name)
         return group
