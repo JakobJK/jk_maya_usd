@@ -4,16 +4,79 @@
     upAxis = "Y"
 )
 
-def Xform "GUIDES"
+def Xform "group8"
 {
-    def Xform "group1"
+    float3 xformOp:rotateXYZ = (0, 0, 0)
+    float3 xformOp:scale = (1, 1, 1)
+    double3 xformOp:translate = (0, -0.010703215048974646, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+    def Xform "group7"
     {
-        def NurbsCurves "curve1"
+        float3 xformOp:rotateXYZ = (0, 0, 0)
+        float3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+        def Xform "group6"
         {
-            int[] curveVertexCounts = [7]
-            double[] knots = [0, 0, 0, 1, 2, 3, 4, 4, 4]
-            int[] order = [4]
-            point3f[] points = [(0.3159326, 0, 2.258175), (1.686023, 0, 2.6789572), (4.4262037, 0, 3.5205219), (7.6765647, 0, 1.1416336), (-5.463029, 0, -1.0252043), (-5.69115, 0, 2.1990514), (-5.8052106, 0, 3.8111792)]
+            float3 xformOp:rotateXYZ = (0, 0, 0)
+            float3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+            def Xform "group5"
+            {
+                float3 xformOp:rotateXYZ = (0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                def Xform "group4"
+                {
+                    float3 xformOp:rotateXYZ = (0, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                    def Xform "group3"
+                    {
+                        float3 xformOp:rotateXYZ = (0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
+                        double3 xformOp:translate = (0, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                        def Xform "group2"
+                        {
+                            float3 xformOp:rotateXYZ = (0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                            def Xform "group1"
+                            {
+                                float3 xformOp:rotateXYZ = (0, 0, 0)
+                                float3 xformOp:scale = (1, 1, 1)
+                                double3 xformOp:translate = (0, 0, 0)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+                                def Mesh "pCone1"
+                                {
+                                    float3[] extent = [(-1.0000002, -1, -1.0000005), (1, 1, 1.0000001)]
+                                    int[] faceVertexCounts = [20, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+                                    int[] faceVertexIndices = [0, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 20, 1, 2, 20, 2, 3, 20, 3, 4, 20, 4, 5, 20, 5, 6, 20, 6, 7, 20, 7, 8, 20, 8, 9, 20, 9, 10, 20, 10, 11, 20, 11, 12, 20, 12, 13, 20, 13, 14, 20, 14, 15, 20, 15, 16, 20, 16, 17, 20, 17, 18, 20, 18, 19, 20, 19, 0, 20]
+                                    point3f[] points = [(0.95105714, -1.0107032, -0.30901718), (0.80901754, -1.0107032, -0.5877856), (0.5877856, -1.0107032, -0.8090175), (0.30901715, -1.0107032, -0.951057), (0, -1.0107032, -1.0000005), (-0.30901715, -1.0107032, -0.95105696), (-0.5877855, -1.0107032, -0.8090173), (-0.80901724, -1.0107032, -0.5877854), (-0.9510568, -1.0107032, -0.30901706), (-1.0000002, -1.0107032, 0), (-0.9510568, -1.0107032, 0.30901706), (-0.8090172, -1.0107032, 0.58778536), (-0.58778536, -1.0107032, 0.8090171), (-0.30901706, -1.0107032, 0.95105666), (-2.9802322e-8, -1.0107032, 1.0000001), (0.30901697, -1.0107032, 0.9510566), (0.58778524, -1.0107032, 0.80901706), (0.809017, -1.0107032, 0.5877853), (0.95105654, -1.0107032, 0.309017), (1, -1.0107032, 0), (0, 0.9892968, 0)]
+                                    texCoord2f[] primvars:st = [(0.7377643, 0.1727457), (0.7022544, 0.1030536), (0.64694643, 0.04774563), (0.5772543, 0.012235746), (0.5, -1.1920929e-7), (0.4227457, 0.012235761), (0.35305363, 0.047745675), (0.2977457, 0.103053644), (0.26223582, 0.17274573), (0.24999994, 0.25), (0.26223582, 0.32725427), (0.2977457, 0.39694634), (0.35305366, 0.4522543), (0.42274573, 0.48776418), (0.5, 0.5), (0.57725424, 0.48776415), (0.6469463, 0.45225427), (0.70225424, 0.3969463), (0.7377641, 0.32725424), (0.75, 0.25), (0.25, 0.5), (0.275, 0.5), (0.3, 0.5), (0.32500002, 0.5), (0.35000002, 0.5), (0.37500003, 0.5), (0.40000004, 0.5), (0.42500004, 0.5), (0.45000005, 0.5), (0.47500005, 0.5), (0.50000006, 0.5), (0.52500004, 0.5), (0.55, 0.5), (0.575, 0.5), (0.59999996, 0.5), (0.62499994, 0.5), (0.6499999, 0.5), (0.6749999, 0.5), (0.69999987, 0.5), (0.72499985, 0.5), (0.7499998, 0.5), (0.5, 1)] (
+                                        interpolation = "faceVarying"
+                                    )
+                                    int[] primvars:st:indices = [0, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 21, 41, 21, 22, 41, 22, 23, 41, 23, 24, 41, 24, 25, 41, 25, 26, 41, 26, 27, 41, 27, 28, 41, 28, 29, 41, 29, 30, 41, 30, 31, 41, 31, 32, 41, 32, 33, 41, 33, 34, 41, 34, 35, 41, 35, 36, 41, 36, 37, 41, 37, 38, 41, 38, 39, 41, 39, 40, 41]
+                                    uniform token subdivisionScheme = "catmullClark"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

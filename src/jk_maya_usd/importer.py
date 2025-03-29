@@ -3,6 +3,7 @@ from pxr import Usd, UsdGeom
 
 from jk_maya_usd.constants import DESTINATION
 from jk_maya_usd.prims import usd_prims
+from jk_maya_usd.maya_utilities import create_variant_set, create_variant
 
 class CustomUSDImporter():
     """ Import Scene from USD into Maya """
@@ -10,13 +11,13 @@ class CustomUSDImporter():
         self.stage = None
 
     def _process_node(self, prim, parent):
-        node_type = prim.GetTypeName().lower()
+        node_type = prim.GetTypeName()
         if node_type in usd_prims:
             cls = usd_prims[node_type]() 
             maya_node = cls.import_node(self.stage, prim, parent)
-            # if parent:
-            #     cmds.parent(maya_node, parent)
             return maya_node
+        else:
+            print(f"{node_type} not in usd_prims")
 
 
     def _open_stage(self, file_path):
@@ -28,7 +29,6 @@ class CustomUSDImporter():
     def _traverse_prim(self, prim, parent):
         if not prim.IsValid():
             return
-
         dag_node = self._process_node(prim, parent)
 
         variant_sets = prim.GetVariantSets()
@@ -54,18 +54,20 @@ class CustomUSDImporter():
 
     def _add_variant(self, dag_node, variant_set, variant):
         if not cmds.objExists(f"{dag_node}|{variant_set}"):
-            variant_set_group = cmds.group(empty=True, name=variant_set, parent=dag_node)
+            variant_set = create_variant_set(variant_set, parent=dag_node)
         else:
-            variant_set_group = f"{dag_node}|{variant_set}"
+            variant_set = f"{dag_node}|{variant_set}"
 
-        if not cmds.objExists(f"{variant_set_group}|{variant}"):
-            variant_group = cmds.group(empty=True, name=variant, parent=variant_set_group)
-            return variant_group
+        if not cmds.objExists(f"{variant_set}|{variant}"):
+            variant = create_variant(variant, variant_set)
 
-        return f"{variant_set_group}|{variant}"
+        return f"{variant_set}|{variant}"
 
 
-    def import_from_usd(self, top_dag_node: str = ""): 
-        parent = None # Could potentially get asset name or something
-        self._open_stage(DESTINATION)
+    def import_from_usd(self, usd_file, top_dag_node: str = "", parent =None):
+        self._open_stage(f"{DESTINATION}{usd_file}")
+        self.temporary_dead_zone = create_group("temporary_dead_zone")
+
         self._traverse_prim(self.stage.GetPseudoRoot(), parent)
+
+        cmds.delete(self.temporary_dead_zone)
