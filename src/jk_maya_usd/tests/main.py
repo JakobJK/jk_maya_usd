@@ -1,4 +1,3 @@
-from pxr import Usd
 
 import unittest
 

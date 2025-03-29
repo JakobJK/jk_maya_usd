@@ -1,9 +1,9 @@
 from maya import cmds
-from pxr import Usd, UsdGeom
+from pxr import Usd
 
 from jk_maya_usd.constants import DESTINATION
 from jk_maya_usd.prims import usd_prims
-from jk_maya_usd.maya_utilities import create_variant_set, create_variant
+from jk_maya_usd.maya_utilities import create_variant_set, create_variant, create_group
 
 class CustomUSDImporter():
     """ Import Scene from USD into Maya """
@@ -13,7 +13,7 @@ class CustomUSDImporter():
     def _process_node(self, prim, parent):
         node_type = prim.GetTypeName()
         if node_type in usd_prims:
-            cls = usd_prims[node_type]() 
+            cls = usd_prims[node_type](self) 
             maya_node = cls.import_node(self.stage, prim, parent)
             return maya_node
         else:
@@ -52,6 +52,8 @@ class CustomUSDImporter():
             for child in prim.GetChildren():
                 self._traverse_prim(child, dag_node)
 
+        return dag_node
+
     def _add_variant(self, dag_node, variant_set, variant):
         if not cmds.objExists(f"{dag_node}|{variant_set}"):
             variant_set = create_variant_set(variant_set, parent=dag_node)
@@ -65,9 +67,11 @@ class CustomUSDImporter():
 
 
     def import_from_usd(self, usd_file, top_dag_node: str = "", parent =None):
-        self._open_stage(f"{DESTINATION}{usd_file}")
+        self._open_stage(usd_file)
         self.temporary_dead_zone = create_group("temporary_dead_zone")
 
-        self._traverse_prim(self.stage.GetPseudoRoot(), parent)
+        dag_node = self._traverse_prim(self.stage.GetPseudoRoot(), parent)
 
         cmds.delete(self.temporary_dead_zone)
+        
+        return dag_node

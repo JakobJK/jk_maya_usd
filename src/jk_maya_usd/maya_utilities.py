@@ -3,7 +3,7 @@
 from maya import cmds
 from maya.api import OpenMaya as om
 
-from jk_maya_usd.constants import CALLBACK_ID_LONGNAME, CALLBACK_ID_SHORTNAME, USD_Kind, USD_Purpose, USD_Type, COLORS
+from jk_maya_usd.constants import CALLBACK_ID_LONGNAME, CALLBACK_ID_SHORTNAME, USD_Purpose, USD_Type, COLORS
 
 def get_scene_scale() -> float:
     """
@@ -123,7 +123,7 @@ def create_group(name: str, parent: str | None = None) -> str:
         group = cmds.group(empty=True, name=name)
     return group
 
-def create_scope(name: str, parent: str) -> str:
+def create_scope(name: str, parent: str | None = None) -> str:
     """
     Creates a group with a 'Scope' type attribute.
 
@@ -136,9 +136,9 @@ def create_scope(name: str, parent: str) -> str:
     """
     group = create_group(name, parent)
     scope = add_type_attribute(group, "Scope")
-    return scope
+    return group
 
-def create_variant(name: str, parent: str) -> str:
+def create_variant(name: str, parent: str | None = None) -> str:
     """
     Creates a group with a 'Variant' type attribute.
 
@@ -153,7 +153,7 @@ def create_variant(name: str, parent: str) -> str:
     variant = add_type_attribute(group, "Variant")
     return variant
 
-def create_variant_set(name: str, parent: str) -> str:
+def create_variant_set(name: str, parent: str | None = None) -> str:
     """
     Creates a group with a 'VariantSet' type attribute.
 

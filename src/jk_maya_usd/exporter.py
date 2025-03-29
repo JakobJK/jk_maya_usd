@@ -1,7 +1,9 @@
 from maya import cmds
 from pxr import Usd, UsdGeom
 
-from jk_maya_usd.constants import DEFAULT_CAMERAS, DESTINATION
+import os
+
+from jk_maya_usd.constants import DEFAULT_CAMERAS
 from jk_maya_usd.prims import usd_prims
 
 from jk_maya_usd.maya_utilities import get_scene_scale, get_up_axis, get_node_type
@@ -9,26 +11,34 @@ from jk_maya_usd.maya_utilities import get_scene_scale, get_up_axis, get_node_ty
 class CustomUSDExporter():
     """ Export Scene from Maya to USD """
     def __init__(self):
-        pass
+        self.materials = {}
+
+    def get_materials(self):
+        return self.materials
     
     def _process_node(self, dag_node, node_type, target):
         if node_type in usd_prims:
-            cls = usd_prims[node_type]() 
+            cls = usd_prims[node_type](self)
             prim = cls.export_node(self.stage, dag_node, target)
             print(f"Prim({prim.GetTypeName()}) created: {prim.GetName()}")
         else:
             print(f"{node_type} not processed")
             
-    def _create_stage(self, stage_name):
-        self.stage = Usd.Stage.CreateNew(f"{DESTINATION}{stage_name}")
-        
+    def _create_stage(self, stage_path):
+        if os.path.exists(stage_path):
+            os.remove(stage_path)
+
+
+        # Create new stage
+        self.stage = Usd.Stage.CreateNew(stage_path)
+
         up_axis = get_up_axis()
         meters_per_unit = get_scene_scale()
         up_axis_token = UsdGeom.Tokens.y if up_axis == 'Y' else UsdGeom.Tokens.z
-        
+
         UsdGeom.SetStageUpAxis(self.stage, up_axis_token)
-        UsdGeom.SetStageMetersPerUnit(self.stage, meters_per_unit) 
-        
+        UsdGeom.SetStageMetersPerUnit(self.stage, meters_per_unit)
+
     def _traverse(self, node, parent_path):
         node_type = get_node_type(node)
         short_name = node.split('|')[-1]
@@ -79,4 +89,4 @@ class CustomUSDExporter():
             self._traverse(node, "")
 
         self.stage.GetRootLayer().Save()
-
+        self.stage = None

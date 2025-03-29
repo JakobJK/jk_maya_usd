@@ -1,6 +1,6 @@
 from jk_maya_usd.prims.primbase import PrimBase
 
-from pxr import Usd, UsdGeom, Vt, Gf
+from pxr import UsdGeom
 from maya import cmds
 
 from jk_maya_usd.maya_utilities import create_group

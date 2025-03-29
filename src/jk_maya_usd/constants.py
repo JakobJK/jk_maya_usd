@@ -1,7 +1,7 @@
 from enum import Enum
 
 DEFAULT_CAMERAS = {'|back', '|bottom', '|front', '|persp', '|side', '|top'}
-DESTINATION = "/Users/jakobkousholt/repos/jk_maya_usd/"
+DESTINATION = "/Users/jakobkousholt/repos/jk_maya_usd/output"
 CALLBACK_ID_LONGNAME = "callbackId" 
 CALLBACK_ID_SHORTNAME = "cbid"
 

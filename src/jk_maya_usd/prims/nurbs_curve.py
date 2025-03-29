@@ -1,6 +1,6 @@
 from jk_maya_usd.prims.primbase import PrimBase
 from jk_maya_usd.maya_utilities import create_transform, get_mobject_from_name
-from pxr import UsdGeom, Vt, Sdf
+from pxr import UsdGeom, Vt
 from maya.api import OpenMaya as om
 
 class NurbsCurve(PrimBase):

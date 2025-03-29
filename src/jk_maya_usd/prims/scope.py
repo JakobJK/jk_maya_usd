@@ -1,5 +1,4 @@
-from pxr import Usd, UsdGeom, Vt
-from maya import cmds
+from pxr import UsdGeom
 
 from jk_maya_usd.prims.primbase import PrimBase
 

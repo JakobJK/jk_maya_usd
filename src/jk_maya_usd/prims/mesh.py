@@ -1,9 +1,16 @@
-from jk_maya_usd.prims.primbase import PrimBase
-from jk_maya_usd.maya_utilities import create_transform, get_mobject_from_name, get_dagpath_from_uuid, get_mesh_fn_from_dag
-from pxr import UsdGeom, Vt, Sdf
+from pxr import UsdGeom, Vt, Sdf, Gf, Usd
 from maya.api import OpenMaya as om
+from maya import cmds
+
+from jk_maya_usd.prims.primbase import PrimBase
+from jk_maya_usd.maya_utilities import get_dagpath_from_uuid, get_mesh_fn_from_dag
+
 
 class Mesh(PrimBase):
+    def get_material(self, prim):
+        binding = UsdShade.MaterialBindingAPI(prim).GetDirectBinding()
+        return binding.GetMaterial() if binding else None
+
     def _export_bounding_box(self, mesh_fn, prim):
         bbox = mesh_fn.boundingBox
         min_pt, max_pt = bbox.min, bbox.max
@@ -41,6 +48,43 @@ class Mesh(PrimBase):
         st_primvar.Set(st_array)
         st_primvar.SetIndices(Vt.IntArray(uv_indices))
 
+    def _export_display_color(self, mesh_fn: om.MFnMesh, mesh: om.MObject, prim: Usd.Prim) -> None:
+        """
+        Exports display color from the given Maya mesh to the USD prim.
+
+        Args:
+            mesh_fn (om.MFnMesh): Function set for the mesh.
+            mesh (om.MObject): The Maya mesh object.
+            prim (Usd.Prim): The USD prim to apply display color to.
+        """
+
+        color_sets = mesh_fn.numColorSets
+        if not color_sets:
+            return  # No color sets, exit early
+
+        colors = mesh_fn.getVertexColors()
+
+
+        if not colors:
+            return
+
+        usd_colors: List[Gf.Vec3f] = [Gf.Vec3f(c.r, c.g, c.b) for c in colors]
+
+        def _vec3_key(c: Gf.Vec3f) -> tuple:
+            return (round(c[0], 4), round(c[1], 4), round(c[2], 4))
+
+        unique_keys = {_vec3_key(c) for c in usd_colors}
+
+        gprim = UsdGeom.Gprim(prim)
+        if len(unique_keys) == 1:
+            primvar = gprim.CreateDisplayColorPrimvar(interpolation='constant')
+            color = list(unique_keys)[0]
+            primvar.Set([Gf.Vec3f(*color)])
+        else:
+            primvar = gprim.CreateDisplayColorPrimvar(interpolation='vertex')
+            primvar.Set(usd_colors)
+
+
     def _export_impl(self, stage, dag_node, target):
         mesh = UsdGeom.Mesh.Define(stage, target)
         prim = mesh.GetPrim()
@@ -49,7 +93,7 @@ class Mesh(PrimBase):
         mesh_fn = get_mesh_fn_from_dag(dag_node)
 
         self._export_mesh_data(mesh_fn, mesh, prim)                   
-        self._export_displayColor(mesh_fn, mesh, prim)
+        self._export_display_color(mesh_fn, mesh, prim)
         self._export_bounding_box(mesh_fn, prim)
         mesh.GetSubdivisionSchemeAttr().Set(UsdGeom.Tokens.catmullClark) 
         return prim
@@ -105,6 +149,26 @@ class Mesh(PrimBase):
         shape_obj = shape_path.node()
         shading_group = om.MSelectionList().add("initialShadingGroup").getDependNode(0)
         om.MFnSet(shading_group).addMember(shape_obj)
+
+        display_primvar = UsdGeom.Gprim(mesh.GetPrim()).GetDisplayColorPrimvar()
+        if display_primvar and display_primvar.HasValue():
+            colors = display_primvar.Get()
+            interp = display_primvar.GetInterpolation()
+
+            if colors:
+                dag_path = mesh_fn.fullPathName()
+                cmds.polyColorSet(dag_path, create=True, colorSet='displayColor', representation='RGB')
+                cmds.polyColorSet(dag_path, currentColorSet=True, colorSet='displayColor')
+                cmds.setAttr(f"{dag_path}.displayColors", 1)
+
+                if interp == 'constant':
+                    color = colors[0]
+                    for i in range(mesh_fn.numVertices):
+                        cmds.polyColorPerVertex(f"{dag_path}.vtx[{i}]", rgb=(color[0], color[1], color[2]), colorDisplayOption=True)
+                elif interp == 'vertex':
+                    for i, color in enumerate(colors):
+                        cmds.polyColorPerVertex(f"{dag_path}.vtx[{i}]", rgb=(color[0], color[1], color[2]), colorDisplayOption=True)
+
 
         # Parent and freeze
         transform_path = om.MDagPath.getAPathTo(mesh_obj)

@@ -1,30 +1,27 @@
 from abc import ABC, abstractmethod
+from pxr import Usd
+import maya.api.OpenMaya as om
 
 
 class PrimBase(ABC):
-    def __init__(self):
-        self.prim = None
+    def __init__(self, processor):
+        self.processor = processor
 
-    def export_node(self, stage: str, dag_node: str, target: str):
+    def export_node(self, stage: Usd.Stage, dag_node: om.MObject, target: str) -> Usd.Prim:
         prim = self._export_impl(stage, dag_node, target)
-        self._attach_attributes_to_usd_nodes(stage, dag_node, target)
         return prim
 
     @abstractmethod
-    def _export_impl(self, stage: str, dag_node: str, target: str):
+    def _export_impl(self, stage: Usd.Stage, dag_node: om.MObject, target: str) -> Usd.Prim:
         pass
 
-    def import_node(self, stage: str, dag_node: str, target: str):
-        prim = self._import_impl(stage, dag_node, target)
-        self._attach_attributes_to_maya_nodes(stage, dag_node, target)
-        return prim
-        
+    def import_node(self, stage: Usd.Stage, dag_node: om.MObject, target: str) -> om.MObject:
+        node = self._import_impl(stage, dag_node, target)
+        return node
+
     @abstractmethod
-    def _import_impl(self, stage: str, dag_node: str, target: str):
+    def _import_impl(self, stage: Usd.Stage, dag_node: om.MObject, target: str) -> om.MObject:
         pass
 
-    def _attach_attributes_to_usd_nodes(self, stage, dag_node, target):
-        pass
-
-    def _attach_attributes_to_maya_nodes(self, stage, dag_node, target):
-        pass
+    def get_processor(self):
+        return self.processor
