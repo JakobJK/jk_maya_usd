@@ -89,7 +89,6 @@ class Mesh(PrimBase):
         mesh = UsdGeom.Mesh.Define(stage, target)
         prim = mesh.GetPrim()
 
-        # Setting points
         mesh_fn = get_mesh_fn_from_dag(dag_node)
 
         self._export_mesh_data(mesh_fn, mesh, prim)                   
@@ -181,7 +180,6 @@ class Mesh(PrimBase):
         # Now freeze using fresh path
         cmds.makeIdentity(transform_path.fullPathName(), apply=True, t=1, r=1, s=1, n=0)
 
-        # Reacquire DAG paths from UUID
         shape_path = om.MDagPath(transform_path)
         shape_path.extendToShape()
 
